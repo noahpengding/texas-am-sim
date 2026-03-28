@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 from random import Random
+from tqdm import tqdm
 
 from game import Card, best_hand_rank, card_sort_key, cards_to_str, create_deck
 
@@ -41,7 +42,7 @@ def _simulate_games_chunk(
     generated_count = 5 - len(fixed_community_cards)
     stats: dict[tuple[Card, Card], dict[str, int]] = {}
 
-    for _ in range(games):
+    for _ in tqdm(range(games)):
         cards_needed = players * 2 + generated_count
         dealt = rng.sample(available_deck, cards_needed)
 
