@@ -24,7 +24,7 @@ Optional behavior:
 - If `holding_cards` contains exactly 2 cards, output is one summary dictionary: `wins`, `losses`, `total_games`, `winning_rate`.
 - If `holding_cards` contains only 1 card, the program raises an error.
 
-Instead of printing a table, the program writes JSON output with grouped records:
+Instead of printing a table, the program writes CSV snapshot files with grouped records:
 
 - `card_1`
 - `card_2`
@@ -44,19 +44,25 @@ uv run main.py
 To call with parameters, use the function from Python:
 
 ```bash
-uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, output='out/results.json')"
+uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, output='out/results.csv')"
 ```
 
 `workers=0` means automatic worker count from CPU cores. You can also set an explicit value, e.g. `workers=8`.
 
+`games_increment` controls incremental CSV snapshots. If set, each batch writes a new file named like `output_0.csv`, `output_1.csv`, etc. At the end, all generated CSV snapshot files are packed into a timestamped `.tar.gz` archive.
+
+```bash
+uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, games_increment=1000, output='out/results_incremental.csv')"
+```
+
 ## Examples
 
 ```bash
-uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, community_cards=['AH','KD','QC'], output='out/results_fixed_board.json')"
+uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, community_cards=['AH','KD','QC'], output='out/results_fixed_board.csv')"
 ```
 
 ```bash
-uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, holding_cards=['AS','KH'], output='out/results_hero_only.json')"
+uv run python -c "from main import run_simulation; run_simulation(players=10, games=5000, workers=8, seed=42, holding_cards=['AS','KH'], output='out/results_hero_only.csv')"
 ```
 
 ## Performance notes
@@ -67,5 +73,5 @@ uv run python -c "from main import run_simulation; run_simulation(players=10, ga
 ## Files
 
 - `game.py`: card model and hand comparison logic
-- `simulation.py`: game simulation, aggregation, and JSON writing
-- `main.py`: command-line entrypoint for JSON output
+- `simulation.py`: game simulation and aggregation
+- `main.py`: command-line entrypoint for CSV snapshots and archive output

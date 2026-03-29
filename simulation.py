@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 from random import Random
+import secrets
 from tqdm import tqdm
 
 from game import Card, best_hand_rank, card_sort_key, cards_to_str, create_deck
@@ -154,10 +155,9 @@ def run_random_games(
     worker_count = workers or (os.cpu_count() or 1)
     worker_count = max(1, min(worker_count, games))
 
-    rng = Random(seed)
     game_splits = _split_games(games, worker_count)
     game_splits = [count for count in game_splits if count > 0]
-    chunk_seeds = [rng.randrange(0, 2**63) for _ in game_splits]
+    chunk_seeds = [secrets.randbelow(2**63) for _ in game_splits]
 
     stats: dict[tuple[Card, Card], dict[str, int]] = {}
 
@@ -230,10 +230,9 @@ def run_hero_hole_cards_games(
     worker_count = workers or (os.cpu_count() or 1)
     worker_count = max(1, min(worker_count, games))
 
-    rng = Random(seed)
     game_splits = _split_games(games, worker_count)
     game_splits = [count for count in game_splits if count > 0]
-    chunk_seeds = [rng.randrange(0, 2**63) for _ in game_splits]
+    chunk_seeds = [secrets.randbelow(2**63) for _ in game_splits]
 
     total_wins = 0
     total_losses = 0
